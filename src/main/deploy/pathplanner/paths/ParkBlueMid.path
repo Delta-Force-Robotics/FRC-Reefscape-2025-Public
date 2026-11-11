@@ -1,0 +1,61 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.144672131147541,
+        "y": 6.794159836065574
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.4545,
+        "y": 6.66725
+      },
+      "isLocked": false,
+      "linkedName": "ScoreAlgae2BlueMid"
+    },
+    {
+      "anchor": {
+        "x": 5.733,
+        "y": 6.6185
+      },
+      "prevControl": {
+        "x": 6.30825,
+        "y": 6.6282499999999995
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "RetractScore",
+      "waypointRelativePos": 0.43273381294963476,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 2.5,
+    "maxAcceleration": 2.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 1000.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "reversed": false,
+  "folder": "BlueMid",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "useDefaultConstraints": true
+}

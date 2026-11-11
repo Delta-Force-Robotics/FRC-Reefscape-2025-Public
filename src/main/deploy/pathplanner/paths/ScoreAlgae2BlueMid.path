@@ -1,0 +1,67 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.21625,
+        "y": 5.36075
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.767684426229508,
+        "y": 5.900196721311476
+      },
+      "isLocked": false,
+      "linkedName": "IntakeAlgae2BlueMid"
+    },
+    {
+      "anchor": {
+        "x": 7.144672131147541,
+        "y": 6.794159836065574
+      },
+      "prevControl": {
+        "x": 6.144672131147541,
+        "y": 6.794159836065574
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "ScoreAlgae2BlueMid"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "ScoreAlgae",
+      "waypointRelativePos": 0.65287769784171,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "ReleaseAlgae",
+      "waypointRelativePos": 1.0,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 2.5,
+    "maxAcceleration": 2.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 1000.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 180.0
+  },
+  "reversed": false,
+  "folder": "BlueMid",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 59.3002774491854
+  },
+  "useDefaultConstraints": true
+}

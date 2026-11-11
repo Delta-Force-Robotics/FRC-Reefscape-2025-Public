@@ -1,0 +1,73 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.7695220015273867,
+        "y": 0.9999445824540555
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.435044273318088,
+        "y": 1.1056744733265333
+      },
+      "isLocked": false,
+      "linkedName": "IntakeCoral1BlueRight"
+    },
+    {
+      "anchor": {
+        "x": 3.8220000000000005,
+        "y": 2.386999999999999
+      },
+      "prevControl": {
+        "x": 3.2166937070092176,
+        "y": 1.3159370475778998
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "ScoreCoral1BlueRight"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "ExtendScoringL4",
+      "waypointRelativePos": 0.20251798561151255,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "Reverse&StopIntake",
+      "waypointRelativePos": 0.6169064748201329,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "ScoreCoralL4",
+      "waypointRelativePos": 1.0,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 2.5,
+    "maxAcceleration": 2.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 1000.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -119.99999999999999
+  },
+  "reversed": false,
+  "folder": "BlueRight",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -170.8982693483912
+  },
+  "useDefaultConstraints": true
+}

@@ -1,0 +1,61 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.471,
+        "y": 5.16575
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 3.0907500000000003,
+        "y": 5.663
+      },
+      "isLocked": false,
+      "linkedName": "ScoreCoral2BlueLeft"
+    },
+    {
+      "anchor": {
+        "x": 2.574,
+        "y": 6.5405
+      },
+      "prevControl": {
+        "x": 2.77875,
+        "y": 6.150499999999999
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "RetractScore",
+      "waypointRelativePos": 0.24136690647482062,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 2.5,
+    "maxAcceleration": 2.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 1000.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 119.99999999999999
+  },
+  "reversed": false,
+  "folder": "BlueLeft",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 119.99999999999999
+  },
+  "useDefaultConstraints": true
+}
