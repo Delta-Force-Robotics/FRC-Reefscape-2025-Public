@@ -1,126 +1,106 @@
 package frc.robot.commands;
 
-import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-
+import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
-import frc.robot.LimelightHelpers;
 import frc.robot.Constants.AutoAlignConstants;
+import frc.robot.LimelightHelpers;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
+/**
+ * Aligns the robot to the left or right reef branch using the robot pose relative to the AprilTag
+ * that is visible when the command starts.
+ *
+ * <p>Ends once the robot has held the aligned pose for {@link AutoAlignConstants#kPoseValidationTime},
+ * or when the tag has not been seen for {@link AutoAlignConstants#kLostTagTimeout}.
+ */
 public class AlignToReefTagRelative extends Command {
-  private PIDController xController, yController, rotController;
-  private boolean isRightScore;
-  private Timer dontSeeTagTimer, stopTimer;
-  private double tagID = -1;
-  private double xSetPoint, ySetPoint, rotSetPoint;
-  private double xTolerance, yTolerance, rotTolerance;
-  private CommandSwerveDrivetrain drivebase;
-  private SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+  private static final String kLimelight = AutoAlignConstants.kLimelightName;
 
-  public AlignToReefTagRelative(boolean isRightScore, CommandSwerveDrivetrain drivebase) {
-    xController = new PIDController(AutoAlignConstants.X_REEF_ALIGNMENT_P, 0.0, 0);  // Vertical movement
-    yController = new PIDController(AutoAlignConstants.Y_REEF_ALIGNMENT_P, 0.0, 0);  // Horitontal movement
-    rotController = new PIDController(AutoAlignConstants.ROT_REEF_ALIGNMENT_P, 0, 0);  // Rotation
-    this.isRightScore = isRightScore;
-    this.drivebase = drivebase;
-    addRequirements(drivebase);
+  private final CommandSwerveDrivetrain drivetrain;
+  private final SwerveRequest.RobotCentric driveRequest =
+      new SwerveRequest.RobotCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+
+  private final PIDController xController = new PIDController(AutoAlignConstants.kXP, 0, 0);
+  private final PIDController yController = new PIDController(AutoAlignConstants.kYP, 0, 0);
+  private final PIDController rotController = new PIDController(AutoAlignConstants.kRotP, 0, 0);
+
+  private final Timer lostTagTimer = new Timer();
+  private final Timer alignedTimer = new Timer();
+
+  private double tagId = -1;
+
+  /**
+   * @param rightBranch true to align to the right reef branch, false for the left one
+   * @param drivetrain the swerve drivetrain
+   */
+  public AlignToReefTagRelative(boolean rightBranch, CommandSwerveDrivetrain drivetrain) {
+    this.drivetrain = drivetrain;
+
+    xController.setSetpoint(rightBranch ? AutoAlignConstants.kRightXSetpoint : AutoAlignConstants.kLeftXSetpoint);
+    yController.setSetpoint(rightBranch ? AutoAlignConstants.kRightYSetpoint : AutoAlignConstants.kLeftYSetpoint);
+    rotController.setSetpoint(rightBranch ? AutoAlignConstants.kRightRotSetpoint : AutoAlignConstants.kLeftRotSetpoint);
+
+    xController.setTolerance(AutoAlignConstants.kXTolerance);
+    yController.setTolerance(AutoAlignConstants.kYTolerance);
+    rotController.setTolerance(AutoAlignConstants.kRotTolerance);
+
+    addRequirements(drivetrain);
   }
 
   @Override
   public void initialize() {
-    this.stopTimer = new Timer();
-    this.stopTimer.start();
-    this.dontSeeTagTimer = new Timer();
-    this.dontSeeTagTimer.start();
+    xController.reset();
+    yController.reset();
+    rotController.reset();
+    lostTagTimer.restart();
+    alignedTimer.restart();
 
-    tagID = LimelightHelpers.getFiducialID("");
+    tagId = LimelightHelpers.getFiducialID(kLimelight);
   }
 
   @Override
   public void execute() {
-    if (isRightScore) {
-      xSetPoint = AutoAlignConstants.RIGHT_X_SETPOINT_REEF_ALIGNMENT;
-      xTolerance = AutoAlignConstants.RIGHT_X_TOLERANCE_REEF_ALIGNMENT;
-
-      ySetPoint = AutoAlignConstants.RIGHT_Y_SETPOINT_REEF_ALIGNMENT;
-      yTolerance = AutoAlignConstants.RIGHT_Y_TOLERANCE_REEF_ALIGNMENT;
-
-      rotSetPoint = AutoAlignConstants.RIGHT_ROT_SETPOINT_REEF_ALIGNMENT;
-      rotTolerance = AutoAlignConstants.ROT_TOLERANCE_REEF_ALIGNMENT;
-      } else {
-      xSetPoint = AutoAlignConstants.LEFT_X_SETPOINT_REEF_ALIGNMENT;
-      xTolerance = AutoAlignConstants.LEFT_X_TOLERANCE_REEF_ALIGNMENT;
-  
-      ySetPoint = AutoAlignConstants.LEFT_Y_SETPOINT_REEF_ALIGNMENT;
-      yTolerance = AutoAlignConstants.LEFT_Y_TOLERANCE_REEF_ALIGNMENT;
-  
-      rotSetPoint = AutoAlignConstants.LEFT_ROT_SETPOINT_REEF_ALIGNMENT;
-      rotTolerance = AutoAlignConstants.ROT_TOLERANCE_REEF_ALIGNMENT;
-      }
-  
-      xController.setSetpoint(xSetPoint);
-      xController.setTolerance(xTolerance);
-  
-      yController.setSetpoint(ySetPoint);
-      yController.setTolerance(yTolerance);
-
-      rotController.setSetpoint(rotSetPoint);
-      rotController.setTolerance(rotTolerance);
-
-    if (LimelightHelpers.getTV("") && LimelightHelpers.getFiducialID("") == tagID) {
-      this.dontSeeTagTimer.reset();
-
-      double[] postions = LimelightHelpers.getBotPose_TargetSpace("");
-      SmartDashboard.putNumber("x", postions[2]);
-      SmartDashboard.putNumber("y", postions[0]);
-      SmartDashboard.putNumber("rot", postions[4]);
-
-      double xSpeed = -xController.calculate(postions[2]);
-      SmartDashboard.putNumber("xSpeed", xSpeed);
-      double ySpeed = -yController.calculate(postions[0]);
-      double rotValue = -rotController.calculate(postions[4]);
-
-      drivebase.setControl(
-        drive.withVelocityX(xSpeed)
-        .withVelocityY(ySpeed)
-        .withRotationalRate(rotValue * 0.2)
-      );
-
-      if (!rotController.atSetpoint() ||
-          !yController.atSetpoint() ||
-          !xController.atSetpoint()) {
-        stopTimer.reset();
-      }
-    } else {
-      drivebase.setControl(
-        drive.withVelocityX(0)
-        .withVelocityY(0)
-        .withRotationalRate(0)
-      );
+    if (!LimelightHelpers.getTV(kLimelight) || LimelightHelpers.getFiducialID(kLimelight) != tagId) {
+      // Without a tag we cannot tell whether we are aligned, so never finish on the aligned timer.
+      alignedTimer.reset();
+      stop();
+      return;
     }
 
-    SmartDashboard.putNumber("poseValidTimer", stopTimer.get());
+    lostTagTimer.reset();
+
+    // [x, y, z, roll, pitch, yaw] of the robot in the tag's coordinate frame
+    double[] pose = LimelightHelpers.getBotPose_TargetSpace(kLimelight);
+    double xSpeed = -xController.calculate(pose[2]);
+    double ySpeed = -yController.calculate(pose[0]);
+    double rotSpeed = -rotController.calculate(pose[4]) * AutoAlignConstants.kRotOutputScale;
+
+    drivetrain.setControl(
+        driveRequest.withVelocityX(xSpeed).withVelocityY(ySpeed).withRotationalRate(rotSpeed));
+
+    if (!xController.atSetpoint() || !yController.atSetpoint() || !rotController.atSetpoint()) {
+      alignedTimer.reset();
+    }
+
+    SmartDashboard.putNumber("AutoAlign/Aligned Time", alignedTimer.get());
   }
 
   @Override
   public void end(boolean interrupted) {
-    drivebase.setControl(
-      drive.withVelocityX(0)
-      .withVelocityY(0)
-      .withRotationalRate(0)
-    );
+    stop();
   }
 
   @Override
   public boolean isFinished() {
-    // Requires the robot to stay in the correct position for 0.3 seconds, as long as it gets a tag in the camera
-    return this.dontSeeTagTimer.hasElapsed(AutoAlignConstants.DONT_SEE_TAG_WAIT_TIME) ||
-        stopTimer.hasElapsed(AutoAlignConstants.POSE_VALIDATION_TIME);
+    return lostTagTimer.hasElapsed(AutoAlignConstants.kLostTagTimeout)
+        || alignedTimer.hasElapsed(AutoAlignConstants.kPoseValidationTime);
+  }
+
+  private void stop() {
+    drivetrain.setControl(driveRequest.withVelocityX(0).withVelocityY(0).withRotationalRate(0));
   }
 }
